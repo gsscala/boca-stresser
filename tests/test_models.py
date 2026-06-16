@@ -1,5 +1,7 @@
 import yaml
+import pytest
 from boca_stress.models import SolutionsConfig
+from pathlib import Path
 
 def test_solutions_config_load(tmp_path):
     d = tmp_path / "solutions"
@@ -26,3 +28,21 @@ def test_solutions_config_load(tmp_path):
     assert config.problems["A"].weight == 3
     assert len(config.problems["A"].solutions) == 2
     assert config.problems["A"].solutions[0].language == "C++"
+
+def test_solutions_config_validation(tmp_path):
+    yml = tmp_path / "invalid.yml"
+    
+    # Missing required field 'language'
+    config_data = {
+        "problems": {
+            "A": {
+                "solutions": [{"file": "A/accepted.cpp"}]
+            }
+        }
+    }
+    with open(yml, "w") as f:
+        yaml.dump(config_data, f)
+    
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        SolutionsConfig.load(yml)
