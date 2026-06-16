@@ -32,6 +32,7 @@ class TeamAgent:
         self.client: Optional[BocaTeam] = None
         self.problem_ids: Dict[str, str] = {}
         self.language_ids: Dict[str, str] = {}
+        self.pending_runs: Dict[str, float] = {} # run_id -> submission_time
 
     async def run(self, stop_event: asyncio.Event) -> None:
         async with BocaTeam(self.url) as client:
@@ -40,8 +41,11 @@ class TeamAgent:
                 self.metrics.register_error(self.agent_id, "Login failed")
                 return
 
-            self.problem_ids = await client.get_problems()
-            self.language_ids = await client.get_languages()
+            # Refresh metadata only if missing (Simulator should have pre-populated)
+            if not self.problem_ids:
+                self.problem_ids = await client.get_problems()
+            if not self.language_ids:
+                self.language_ids = await client.get_languages()
 
             while not stop_event.is_set():
                 think_time = random.randint(1, self.max_think_secs)
@@ -62,15 +66,41 @@ class TeamAgent:
         if not self.client:
             return
         start = time.perf_counter()
-        await self.client.view_status()
+        runs = await self.client.view_status()
         latency = (time.perf_counter() - start) * 1000
         self.metrics.register_status_view(self.agent_id, latency)
+
+        # Check for finished runs
+        now = time.time()
+        for run in runs:
+            rid = run["id"]
+            # Map pending submissions to actual run IDs
+            if rid not in self.pending_runs:
+                # If we see a new run ID and we have an anonymous "pending" entry
+                anon_keys = [k for k in self.pending_runs.keys() if k.startswith("pending_")]
+                if anon_keys:
+                    oldest_anon = min(anon_keys)
+                    self.pending_runs[rid] = self.pending_runs.pop(oldest_anon)
+            
+            if rid in self.pending_runs and run["judged"]:
+                sub_time = self.pending_runs.pop(rid)
+                judging_latency = (now - sub_time) * 1000
+                self.metrics.register_judging_latency(self.agent_id, judging_latency)
 
     async def submit_solution(self) -> None:
         if not self.client:
             return
+        
+        # Ensure we have problems, otherwise try to refresh
+        if not self.problem_ids:
+            self.problem_ids = await self.client.get_problems()
+        if not self.language_ids:
+            self.language_ids = await self.client.get_languages()
+
         # Weighted choice of problem
         problems = list(self.config.problems.keys())
+        if not problems:
+            return
         weights = [self.config.problems[p].weight for p in problems]
         problem_name = random.choices(problems, weights=weights)[0]
         
@@ -80,32 +110,38 @@ class TeamAgent:
         sol_weights = [s.weight for s in problem_cfg.solutions]
         solution = random.choices(problem_cfg.solutions, weights=sol_weights)[0]
         
-        # Fuzzy match problem
+        # Broad fuzzy match problem
         problem_id = None
         for name, pid in self.problem_ids.items():
-            # Matches "A" with "1 - A" or "A - Alimente..."
-            if problem_name.lower() in name.lower():
+            # Match if problem_name ("A") is exactly the short name, 
+            # or if it appears in the full name ("1 - A - Fullname")
+            p_name_lower = problem_name.lower()
+            full_name_lower = name.lower()
+            # Split by common BOCA delimiters
+            parts = [p.strip().lower() for p in name.replace('-', ' ').replace('.', ' ').split()]
+            
+            if p_name_lower == full_name_lower or p_name_lower in parts or f" {p_name_lower} " in f" {full_name_lower} ":
                 problem_id = pid
                 break
         
-        # Fuzzy match language
+        if not problem_id:
+            found = list(self.problem_ids.keys())[:5]
+            self.metrics.register_error(self.agent_id, f"Problem {problem_name} not found. Found: {found}")
+            return
+
+        # Broad fuzzy match language
         language_id = None
         for name, lid in self.language_ids.items():
             if solution.language.lower() in name.lower():
                 language_id = lid
                 break
         
-        # Fallback for language if C++ not found (use first available)
-        if not language_id and self.language_ids:
-            language_id = list(self.language_ids.values())[0]
-
-        if not problem_id:
-            # Skip if problem not on server (e.g. upload failed)
-            return
-
         if not language_id:
-            self.metrics.register_error(self.agent_id, f"Language {solution.language} not found")
-            return
+            if self.language_ids:
+                language_id = list(self.language_ids.values())[0]
+            else:
+                self.metrics.register_error(self.agent_id, f"No languages available on server")
+                return
 
         source_path = self.solutions_dir / solution.file
         if not source_path.exists():
@@ -113,10 +149,12 @@ class TeamAgent:
             return
         
         start = time.perf_counter()
-        success = await self.client.submit_run(problem_id, language_id, source_path)
+        # Use improved submission method with server feedback
+        success, msg = await self.client.submit_run_with_msg(problem_id, language_id, source_path)
         latency = (time.perf_counter() - start) * 1000
         
         if success:
+            self.pending_runs["pending_" + str(time.time())] = time.time()
             self.metrics.register_submission(self.agent_id, problem_name, solution.language, latency)
         else:
-            self.metrics.register_error(self.agent_id, f"Submission failed for {problem_name}")
+            self.metrics.register_error(self.agent_id, f"Sub failed for {problem_name}: {msg}")
