@@ -1,85 +1,187 @@
 problems:
   A:
-    weight: 1
+    weight: 5
     solutions:
-      - file: A/main.cpp
-        language: C++
-        weight: 1
+    - file: A/main.cpp
+      language: C++
+      weight: 20
+    - file: A/main.py
+      language: Python
+      weight: 20
+    - file: A/tle.cpp
+      language: C++
+      weight: 5
+    - file: A/mle.cpp
+      language: C++
+      weight: 5
+    - file: A/stack.cpp
+      language: C++
+      weight: 5
+    - file: A/output.cpp
+      language: C++
+      weight: 5
+    - file: A/tle.py
+      language: Python
+      weight: 5
+    - file: A/mle.py
+      language: Python
+      weight: 5
+    - file: A/A.java
+      language: Java
+      weight: 20
   B:
     weight: 1
     solutions:
-      - file: B/main.cpp
-        language: C++
-        weight: 1
+    - file: B/main.cpp
+      language: C++
+      weight: 1
+    - file: B/main.py
+      language: Python
+      weight: 1
+    - file: B/B.java
+      language: Java
+      weight: 1
   C:
     weight: 1
     solutions:
-      - file: C/main.cpp
-        language: C++
-        weight: 1
+    - file: C/main.cpp
+      language: C++
+      weight: 1
+    - file: C/main.py
+      language: Python
+      weight: 1
+    - file: C/C.java
+      language: Java
+      weight: 1
   D:
     weight: 1
     solutions:
-      - file: D/main.cpp
-        language: C++
-        weight: 1
+    - file: D/main.cpp
+      language: C++
+      weight: 1
+    - file: D/main.py
+      language: Python
+      weight: 1
+    - file: D/D.java
+      language: Java
+      weight: 1
   E:
     weight: 1
     solutions:
-      - file: E/main.cpp
-        language: C++
-        weight: 1
+    - file: E/main.cpp
+      language: C++
+      weight: 1
+    - file: E/main.py
+      language: Python
+      weight: 1
+    - file: E/E.java
+      language: Java
+      weight: 1
   F:
     weight: 1
     solutions:
-      - file: F/main.cpp
-        language: C++
-        weight: 1
+    - file: F/main.cpp
+      language: C++
+      weight: 1
+    - file: F/main.py
+      language: Python
+      weight: 1
+    - file: F/F.java
+      language: Java
+      weight: 1
   G:
     weight: 1
     solutions:
-      - file: G/main.cpp
-        language: C++
-        weight: 1
+    - file: G/main.cpp
+      language: C++
+      weight: 1
+    - file: G/main.py
+      language: Python
+      weight: 1
+    - file: G/G.java
+      language: Java
+      weight: 1
   H:
     weight: 1
     solutions:
-      - file: H/main.cpp
-        language: C++
-        weight: 1
+    - file: H/main.cpp
+      language: C++
+      weight: 1
+    - file: H/main.py
+      language: Python
+      weight: 1
+    - file: H/H.java
+      language: Java
+      weight: 1
   I:
     weight: 1
     solutions:
-      - file: I/main.cpp
-        language: C++
-        weight: 1
+    - file: I/main.cpp
+      language: C++
+      weight: 1
+    - file: I/main.py
+      language: Python
+      weight: 1
+    - file: I/I.java
+      language: Java
+      weight: 1
   J:
     weight: 1
     solutions:
-      - file: J/main.cpp
-        language: C++
-        weight: 1
+    - file: J/main.cpp
+      language: C++
+      weight: 1
+    - file: J/main.py
+      language: Python
+      weight: 1
+    - file: J/J.java
+      language: Java
+      weight: 1
   K:
     weight: 1
     solutions:
-      - file: K/main.cpp
-        language: C++
-        weight: 1
+    - file: K/main.cpp
+      language: C++
+      weight: 1
+    - file: K/main.py
+      language: Python
+      weight: 1
+    - file: K/K.java
+      language: Java
+      weight: 1
   L:
     weight: 1
     solutions:
-      - file: L/main.cpp
-        language: C++
-        weight: 1
+    - file: L/main.cpp
+      language: C++
+      weight: 1
+    - file: L/main.py
+      language: Python
+      weight: 1
+    - file: L/L.java
+      language: Java
+      weight: 1
   M:
     weight: 1
     solutions:
-      - file: M/main.cpp
-        language: C++
-        weight: 1
+    - file: M/main.cpp
+      language: C++
+      weight: 1
+    - file: M/main.py
+      language: Python
+      weight: 1
+    - file: M/M.java
+      language: Java
+      weight: 1
   N:
     weight: 1
     solutions:
-      - file: N/main.cpp
-        language: C++
-        weight: 1
+    - file: N/main.cpp
+      language: C++
+      weight: 1
+    - file: N/main.py
+      language: Python
+      weight: 1
+    - file: N/N.java
+      language: Java
+      weight: 1
