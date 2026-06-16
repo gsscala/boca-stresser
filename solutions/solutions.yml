@@ -1,0 +1,85 @@
+problems:
+  A:
+    weight: 1
+    solutions:
+      - file: A/main.cpp
+        language: C++
+        weight: 1
+  B:
+    weight: 1
+    solutions:
+      - file: B/main.cpp
+        language: C++
+        weight: 1
+  C:
+    weight: 1
+    solutions:
+      - file: C/main.cpp
+        language: C++
+        weight: 1
+  D:
+    weight: 1
+    solutions:
+      - file: D/main.cpp
+        language: C++
+        weight: 1
+  E:
+    weight: 1
+    solutions:
+      - file: E/main.cpp
+        language: C++
+        weight: 1
+  F:
+    weight: 1
+    solutions:
+      - file: F/main.cpp
+        language: C++
+        weight: 1
+  G:
+    weight: 1
+    solutions:
+      - file: G/main.cpp
+        language: C++
+        weight: 1
+  H:
+    weight: 1
+    solutions:
+      - file: H/main.cpp
+        language: C++
+        weight: 1
+  I:
+    weight: 1
+    solutions:
+      - file: I/main.cpp
+        language: C++
+        weight: 1
+  J:
+    weight: 1
+    solutions:
+      - file: J/main.cpp
+        language: C++
+        weight: 1
+  K:
+    weight: 1
+    solutions:
+      - file: K/main.cpp
+        language: C++
+        weight: 1
+  L:
+    weight: 1
+    solutions:
+      - file: L/main.cpp
+        language: C++
+        weight: 1
+  M:
+    weight: 1
+    solutions:
+      - file: M/main.cpp
+        language: C++
+        weight: 1
+  N:
+    weight: 1
+    solutions:
+      - file: N/main.cpp
+        language: C++
+        weight: 1

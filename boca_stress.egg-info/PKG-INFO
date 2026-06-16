@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: boca-stress
+Version: 0.1.0
+Summary: A stress testing tool for BOCA Online Judge
+Author: Developer
+Requires-Python: >=3.12
+Requires-Dist: typer[all]
+Requires-Dist: rich
+Requires-Dist: pydantic
+Requires-Dist: httpx
+Requires-Dist: pyyaml
+Requires-Dist: pydantic-settings
+Requires-Dist: asyncio
+Requires-Dist: beautifulsoup4
