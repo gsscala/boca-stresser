@@ -5,6 +5,7 @@ from rich.table import Table
 from rich import box
 from rich.console import Console
 from rich.text import Text
+from rich.progress import BarColumn, Progress, TextColumn
 from datetime import datetime
 import time
 import asyncio
@@ -26,7 +27,7 @@ class TUI:
         )
         layout["main"].split_row(
             Layout(name="stats"),
-            Layout(name="system", size=40),
+            Layout(name="system", size=50),
         )
         return layout
 
@@ -52,18 +53,34 @@ class TUI:
         table.add_row("Consultas Status:", str(self.metrics.total_status_views))
         table.add_row("Erros:", f"[red]{self.metrics.total_errors}[/red]")
         table.add_row("Throughput:", f"{self.metrics.submissions_per_min:.2f} sub/min")
-        table.add_row("p50 Latency (Sub):", f"{self.metrics.avg_submission_latency:.0f} ms")
+        table.add_row("p50 Latency (Sub):", f"{self.metrics.p50_submission_latency:.0f} ms")
+        table.add_row("p90 Latency (Sub):", f"{self.metrics.p90_submission_latency:.0f} ms")
+        table.add_row("p50 Judging Latency:", f"{self.metrics.p50_judging_latency/1000:.1f} s")
         
         return Panel(table, title="Estatísticas", box=box.ROUNDED)
 
+    def _render_bar(self, value: float, color: str = "green") -> str:
+        filled = int(value / 10)
+        bar = "█" * filled + "░" * (10 - filled)
+        return f"[{color}]{bar}[/{color}] {value:3.0f}%"
+
     def get_system_panel(self) -> Panel:
-        # Placeholder for system metrics
+        sys = self.metrics.system
         table = Table.grid(expand=True)
-        table.add_row("CPU:  [green]████████░░░░░░░[/green] 53%")
-        table.add_row("Mem:  [blue]██████░░░░░░░░░[/blue] 40%")
-        table.add_row("Load: 1.25 1.10 0.95")
+        
+        table.add_row(f"CPU:  {self._render_bar(sys.cpu, 'green')}")
+        table.add_row(f"Mem:  {self._render_bar(sys.mem, 'blue')}")
+        table.add_row(f"Load: {sys.load[0]:.2f} {sys.load[1]:.2f} {sys.load[2]:.2f}")
         table.add_row("")
-        table.add_row("Fila Autojudge: [yellow]████░░░░░░░░░░░[/yellow] 12")
+        
+        queue_val = min(100, sys.queue_size)
+        table.add_row(f"Fila Autojudge: {self._render_bar(float(queue_val), 'yellow')} ({sys.queue_size})")
+        
+        if sys.containers:
+            table.add_row("")
+            table.add_row("[bold]Containers:[/bold]")
+            for name, stats in sys.containers.items():
+                table.add_row(f" {name[:12]:12}: CPU {stats['cpu']:3.0f}% | Mem {stats['mem']:3.0f}%")
         
         return Panel(table, title="Sistema", box=box.ROUNDED)
 

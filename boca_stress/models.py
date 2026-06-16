@@ -32,6 +32,7 @@ class SSHConfig(BaseModel):
     host: str
     user: str
     password: str
+    db_container: Optional[str] = None
 
 class DockerConfig(BaseModel):
     containers: List[str]

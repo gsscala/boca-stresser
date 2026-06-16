@@ -2,6 +2,11 @@
 .pytest_cache/
 .ruff_cache/
 .venv/
+build/
+dist/
+*.egg-info/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 boca-master/
-boca_stress/__pycache__
-boca_stress/boca/__pycache/

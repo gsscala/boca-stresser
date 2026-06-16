@@ -35,11 +35,14 @@ class BocaClient:
         pass_hash = self.hash_password(password, session_id)
         
         # 2. Attempt login
-        resp = await self.client.get(
-            f"{self.base_url}/index.php",
-            params={"name": username, "password": pass_hash}
-        )
-        resp.raise_for_status()
+        try:
+            resp = await self.client.get(
+                f"{self.base_url}/index.php",
+                params={"name": username, "password": pass_hash}
+            )
+            resp.raise_for_status()
+        except Exception:
+            return False
         
         content = resp.text
 

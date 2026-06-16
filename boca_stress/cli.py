@@ -82,6 +82,7 @@ def run(
     db_host: Optional[str] = typer.Option(None, help="Database host to monitor"),
     db_user: Optional[str] = typer.Option(None, help="Database username"),
     db_pass: Optional[str] = typer.Option(None, help="Database password"),
+    db_container: Optional[str] = typer.Option(None, help="Docker container name for DB (to query via SSH fallback)"),
 ) -> None:
     """
     Execute the stress test simulation.
@@ -94,7 +95,12 @@ def run(
     ssh_configs = []
     if ssh_host and ssh_user and ssh_pass:
         for host in ssh_host:
-            ssh_configs.append(SSHConfig(host=host, user=ssh_user, password=ssh_pass))
+            ssh_configs.append(SSHConfig(
+                host=host, 
+                user=ssh_user, 
+                password=ssh_pass,
+                db_container=db_container
+            ))
 
     docker_configs = []
     if docker_container:
@@ -117,9 +123,12 @@ def run(
         db_config=db_config
     )
 
-    sim = Simulator(config)
+    async def _run() -> None:
+        sim = Simulator(config)
+        await sim.run()
+
     try:
-        asyncio.run(sim.run())
+        asyncio.run(_run())
     except KeyboardInterrupt:
         console.print("[yellow]Simulation interrupted by user.[/yellow]")
 
